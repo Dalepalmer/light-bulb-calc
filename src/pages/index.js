@@ -1,150 +1,403 @@
-import * as React from "react"
+import React, {useEffect} from "react";
+import "../components/index.css";
+import light_bulb from "../images/light_bulb.svg";
+import TextTransition, { presets } from "react-text-transition";
 
 // styles
 const pageStyles = {
   color: "#232129",
-  padding: "96px",
   fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-}
-const headingAccentStyles = {
-  color: "#663399",
-}
-const paragraphStyles = {
-  marginBottom: 48,
-}
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-}
-const listStyles = {
-  marginBottom: 96,
-  paddingLeft: 0,
-}
-const listItemStyles = {
-  fontWeight: "300",
-  fontSize: "24px",
-  maxWidth: "560px",
-}
+};
 
-const linkStyle = {
-  color: "#8954A8",
-  fontWeight: "bold",
-  fontSize: "16px",
-  verticalAlign: "5%",
-}
+const textWithShadow = {
+  fontSize: "28px",
+  color: "black",
+  textShadow: "0px 0px 9px white",
+};
 
-const docLinkStyle = {
-  ...linkStyle,
-  listStyleType: "none",
-  marginBottom: 24,
-}
+const textWithYellowShadow = {
+  fontSize: "28px",
+  color: "burlywood",
+  textShadow: "1px 1px 9px white",
+};
 
-const descriptionStyle = {
-  color: "#232129",
-  fontSize: "14px",
-}
-
-const docLink = {
-  text: "Documentation",
-  url: "https://www.gatsbyjs.com/docs/",
-  color: "#8954A8",
-}
-// data
-const links = [
-  {
-    text: "Tutorial",
-    url: "https://www.gatsbyjs.com/docs/tutorial/",
-    description:
-      "A great place to get started if you're new to web development. Designed to guide you through setting up your first Gatsby site.",
-    color: "#E95800",
-  },
-  {
-    text: "How to Guides",
-    url: "https://www.gatsbyjs.com/docs/how-to/",
-    description:
-      "Practical step-by-step guides to help you achieve a specific goal. Most useful when you're trying to get something done.",
-    color: "#1099A8",
-  },
-  {
-    text: "Reference Guides",
-    url: "https://www.gatsbyjs.com/docs/reference/",
-    description:
-      "Nitty-gritty technical descriptions of how Gatsby works. Most useful when you need detailed information about Gatsby's APIs.",
-    color: "#BC027F",
-  },
-  {
-    text: "Conceptual Guides",
-    url: "https://www.gatsbyjs.com/docs/conceptual/",
-    description:
-      "Big-picture explanations of higher-level Gatsby concepts. Most useful for building understanding of a particular topic.",
-    color: "#0D96F2",
-  },
-  {
-    text: "Plugin Library",
-    url: "https://www.gatsbyjs.com/plugins",
-    description:
-      "Add functionality and customize your Gatsby site or app with thousands of plugins built by our amazing developer community.",
-    color: "#000000",
-  },
-]
+const lightBulbStyle = {
+  zIndex: "-1",
+  position: "absolute",
+  left: "438px",
+  top: "-100px",
+};
 
 // markup
 const IndexPage = () => {
-  return (
-    <main style={pageStyles}>
-      <title>Home Page</title>
-      <h1 style={headingStyles}>
-        Congratulations
-        <br />
-        <span style={headingAccentStyles}>— you just made a Gatsby site! </span>
-        <span role="img" aria-label="Party popper emojis">
-          🎉🎉🎉
-        </span>
-      </h1>
-      <p style={paragraphStyles}>
-        Edit <code style={codeStyles}>src/pages/index.js</code> to see this page
-        update in real-time.{" "}
-        <span role="img" aria-label="Sunglasses smiley emoji">
-          😎
-        </span>
-      </p>
-      <ul style={listStyles}>
-        <li style={docLinkStyle}>
-          <a
-            style={linkStyle}
-            href={`${docLink.url}?utm_source=starter&utm_medium=start-page&utm_campaign=minimal-starter`}
-          >
-            {docLink.text}
-          </a>
-        </li>
-        {links.map(link => (
-          <li style={{ ...listItemStyles, color: link.color }}>
-            <span>
-              <a
-                style={linkStyle}
-                href={`${link.url}?utm_source=starter&utm_medium=start-page&utm_campaign=minimal-starter`}
-              >
-                {link.text}
-              </a>
-              <p style={descriptionStyle}>{link.description}</p>
-            </span>
-          </li>
-        ))}
-      </ul>
-      <img
-        alt="Gatsby G Logo"
-        src="data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2a10 10 0 110 20 10 10 0 010-20zm0 2c-3.73 0-6.86 2.55-7.75 6L14 19.75c3.45-.89 6-4.02 6-7.75h-5.25v1.5h3.45a6.37 6.37 0 01-3.89 4.44L6.06 9.69C7 7.31 9.3 5.63 12 5.63c2.13 0 4 1.04 5.18 2.65l1.23-1.06A7.959 7.959 0 0012 4zm-8 8a8 8 0 008 8c.04 0 .09 0-8-8z' fill='%23639'/%3E%3C/svg%3E"
-      />
-    </main>
-  )
+  const [usage, setUsage] = React.useState(0);
+  const [currentBulb, setCurrentBulb] = React.useState("Incandescent")
+  const [newBulb, setNewBulb] = React.useState("LED")
+  const [hours, setHours] = React.useState(1)
+  const [count, setCount] = React.useState(1)
+  const [state, setState] = React.useState("AVG")
+
+var stateMap = {
+  "AVG": 13.3,
+  "AK": 22.53,
+  "AL": 13.00,
+  "AR": 10.59,
+  "AZ": 11.69,
+  "CA": 22.26,
+  "CO": 12.38,
+  "CT": 21.41,
+  "DC": 13.35,
+  "DE": 13.62,
+  "FL": 12.00,
+  "GA": 11.38,
+  "HI": 28.84,
+  "IA": 12.34,
+  "ID": 9.67,
+  "IL": 13.41,
+  "IN": 13.23,
+  "KS": 12.98,
+  "KT": 11.43,
+  "LA": 9.94,
+  "MA": 22.10,
+  "MD": 13.27,
+  "ME": 16.17,
+  "MI": 16.43,
+  "MN": 12.92,
+  "MO": 10.07,
+  "MS": 11.99,
+  "MT": 11.22,
+  "NC": 11.64,
+  "ND": 10.26,
+  "NE": 10.73,
+  "NH": 19.20,
+  "NJ": 15.69,
+  "NM": 12.94,
+  "NV": 11.61,
+  "NY": 18.91,
+  "OH": 12.35,
+  "OK": 10.27,
+  "OR": 11.12,
+  "PA": 13.51,
+  "RI": 23.58,
+  "SC": 12.68,
+  "SD": 12.03,
+  "TN": 11.10,
+  "TX": 12.20,
+  "UT": 10.29,
+  "VA": 12.12,
+  "VT": 19.68,
+  "WA": 9.84,
+  "WI": 14.77,
+  "WV": 12.46,
+  "WY": 11.12,
 }
 
-export default IndexPage
+  function usageCalc() {
+    var watts = 0,
+      newWatt = 0,
+      newKiloWatts = 0,
+      kiloWatts = 0,
+      kiloWattDiff = 0;
+
+    if (currentBulb === "Incandescent") {
+      watts = 60;
+    } else {
+      watts = 12;
+    }
+    if (newBulb === "LED") {
+      newWatt = 8;
+    } else {
+      newWatt = 12;
+    }
+
+    kiloWatts = watts * hours;
+    newKiloWatts = newWatt * hours;
+    kiloWattDiff = kiloWatts - newKiloWatts;
+
+    setUsage((kiloWattDiff * count) / 1000);
+  }
+
+  useEffect(() => {
+    usageCalc()
+    return () => {
+    };
+  }, [currentBulb, newBulb, hours, count]);
+
+  return (
+    <main style={pageStyles}>
+      <div className="jumbotron">
+        <div className="parallax">
+          <div id="group1" className="parallax__group">
+            <div className="parallax__layer parallax__layer--base">
+              <div className="title">
+                <img style={lightBulbStyle} src={light_bulb} alt="light_bulb" />
+                <h4 style={{ fontSize: "50px" }}>
+                  {" "}
+                  There are an estimated{" "}
+                  <span className="flicker" style={{ color: "orange" }}>
+                    12
+                  </span>{" "}
+                  billion light bulbs on the planet.{" "}
+                </h4>
+              </div>
+            </div>
+          </div>
+          <div id="group2" className="parallax__group">
+            <div className="parallax__layer parallax__layer--base">
+              <div className="title"></div>
+            </div>
+            <div className="parallax__layer parallax__layer--back">
+              <div className="title"></div>
+            </div>
+          </div>
+          <div id="group3" className="parallax__group">
+            <div className="parallax__layer parallax__layer--fore">
+              <div className="title">
+                <h4 style={{ fontSize: "50px" }}>
+                  About <span style={{ color: "orange" }}>1/3</span> of these
+                  are in the United States{" "}
+                </h4>
+              </div>
+            </div>
+            <div className="parallax__layer parallax__layer--base">
+              <div className="title"></div>
+            </div>
+          </div>
+          <div id="group4" className="parallax__group">
+            <div className="parallax__layer parallax__layer--base">
+              <div className="title">
+                <h4 style={textWithYellowShadow} id="lightbulb">
+                  In 2010 Incandescent lighting accounted for 45% of lightbulbs
+                  in use. While LED bulbs accounted for less than 2%.
+                </h4>
+              </div>
+            </div>
+            <div className="parallax__layer parallax__layer--back">
+              <div className="title"></div>
+            </div>
+            <div className="parallax__layer parallax__layer--deep">
+              <div className="title"></div>
+            </div>
+          </div>
+          <div id="group5" className="parallax__group">
+            <div className="parallax__layer parallax__layer--fore">
+              <div className="title"></div>
+            </div>
+            <div className="parallax__layer parallax__layer--base">
+              <div className="title">
+                <h4 style={{fontSize: "24px"}}>
+                  Incandescent light bulbs operate at an efficiency level of
+                  less than 3%. With most energy being converted to heat and misused in many cases.
+                </h4>
+                <h4 style={{fontSize: "24px"}}>
+                  While Compact Fluorescent bulbs operate around 80% efficiency and
+                  LED bulbs push up to 90% energy efficiency.
+                </h4>
+              </div>
+            </div>
+          </div>
+          <div id="group6" className="parallax__group">
+            <div className="parallax__layer parallax__layer--back">
+              <div className="title"></div>
+            </div>
+            <div className="parallax__layer parallax__layer--base">
+              <div className="title">
+                <h4 style={textWithShadow}>
+                  With the gain in effeciency, by 2027, widespread use of LEDs
+                  could save about{" "}
+                  <span
+                    style={{ color: "orange", textShadow: "0 0 4px black" }}
+                  >
+                    348 TWh
+                  </span>{" "}
+                  (compared to no LED use) of electricity:
+                </h4>
+                <h4 style={textWithShadow}>
+                  This is the equivalent annual electrical output of 44 large
+                  electric power plants (1000 megawatts each), and a total
+                  savings of more than{" "}
+                  <span
+                    style={{ color: "#21e720", textShadow: "0 0 4px black" }}
+                  >
+                    $30 billion
+                  </span>{" "}
+                  at today&apos;s electricity prices.
+                </h4>
+              </div>
+            </div>
+          </div>
+          <div id="group7" className="parallax__group">
+            <div className="parallax__layer parallax__layer--base">
+              <div style={{margin: "30px 0"}} className="title">
+                <h4>Energy Savings Calculator</h4>
+                <div>
+                  <div className="flx-cntr flx-clm">
+                    <h5>
+                      Calculate how much money and energy you could potentially
+                      save by switching to LED lighting today
+                    </h5>
+                    <div>
+                      <form className="flx-cntr flx-clm" id="lightbulb-form">
+                        <div style={{ width: "100%" }} className="input-field">
+                          <div className="flx-clm flx-cntr">
+                            <label htmlFor="bulb-count">
+                              Number of Bulbs you are willing to change in your
+                              household
+                            </label>
+                            <input
+                              onChange={(e) => {setCount(e.target.value)}}
+                              type="number"
+                              value={count}
+                              step="1"
+                              min="1"
+                              id="bulb-count"
+                            />
+                          </div>
+                        </div>
+                        <div className="input-field">
+                          <div className="flx-clm flx-cntr">
+                            <label htmlFor="hours">
+                              Average number of hours used per day
+                            </label>
+                            <input   
+                              onChange={(e) => {setHours(e.target.value)}}
+                              type="number"
+                              value={hours}
+                              step="1"
+                              min="1" 
+                              id="hours"
+                            />
+                          </div>
+                        </div>
+                        <div className="input-field">
+                          <div className="flx-clm flx-cntr">
+                            <label htmlFor="hours">
+                              Which State are you in?
+                            </label>
+                            <select
+                              onChange={(e) => {setState(e.target.value)}}
+                            >
+                              <option value="AVG">US Average</option>
+                              <option value="AL">Alabama</option>
+                              <option value="AK">Alaska</option>
+                              <option value="AZ">Arizona</option>
+                              <option value="AR">Arkansas</option>
+                              <option value="CA">California</option>
+                              <option value="CO">Colorado</option>
+                              <option value="CT">Connecticut</option>
+                              <option value="DE">Delaware</option>
+                              <option value="DC">District Of Columbia</option>
+                              <option value="FL">Florida</option>
+                              <option value="GA">Georgia</option>
+                              <option value="HI">Hawaii</option>
+                              <option value="ID">Idaho</option>
+                              <option value="IL">Illinois</option>
+                              <option value="IN">Indiana</option>
+                              <option value="IA">Iowa</option>
+                              <option value="KS">Kansas</option>
+                              <option value="KY">Kentucky</option>
+                              <option value="LA">Louisiana</option>
+                              <option value="ME">Maine</option>
+                              <option value="MD">Maryland</option>
+                              <option value="MA">Massachusetts</option>
+                              <option value="MI">Michigan</option>
+                              <option value="MN">Minnesota</option>
+                              <option value="MS">Mississippi</option>
+                              <option value="MO">Missouri</option>
+                              <option value="MT">Montana</option>
+                              <option value="NE">Nebraska</option>
+                              <option value="NV">Nevada</option>
+                              <option value="NH">New Hampshire</option>
+                              <option value="NJ">New Jersey</option>
+                              <option value="NM">New Mexico</option>
+                              <option value="NY">New York</option>
+                              <option value="NC">North Carolina</option>
+                              <option value="ND">North Dakota</option>
+                              <option value="OH">Ohio</option>
+                              <option value="OK">Oklahoma</option>
+                              <option value="OR">Oregon</option>
+                              <option value="PA">Pennsylvania</option>
+                              <option value="RI">Rhode Island</option>
+                              <option value="SC">South Carolina</option>
+                              <option value="SD">South Dakota</option>
+                              <option value="TN">Tennessee</option>
+                              <option value="TX">Texas</option>
+                              <option value="UT">Utah</option>
+                              <option value="VT">Vermont</option>
+                              <option value="VA">Virginia</option>
+                              <option value="WA">Washington</option>
+                              <option value="WV">West Virginia</option>
+                              <option value="WI">Wisconsin</option>
+                              <option value="WY">Wyoming</option>
+                            </select>		
+                          </div>
+                        </div>
+                        <div className="input-field">
+                          <div className="flx-clm flx-cntr">
+                            <label htmlFor="current-type">
+                              Current Bulb Type?
+                            </label>
+                            <select onChange={(e) => {setCurrentBulb(e.target.value)}} id="current-type">
+                              <option value="Incandescent">Incandescent</option>
+                              <option value="CFL">Compact Fluorescent</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="input-field">
+                          <div className="flx-clm flx-cntr">
+                            <label htmlFor="bulb-type-after">
+                              New Bulb Type?
+                            </label>
+                            <select onChange={(e) => {setNewBulb(e.target.value)}} id="new-type">
+                              <option value="LED">LED</option>
+                              <option value="CFL">Compact Fluorescent</option>
+                            </select>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div id="output">
+                  <ul id="lightbulb-output">
+                    <p>Amount of energy saved
+                    <TextTransition
+                      inline={true}
+                      text={usage.toLocaleString()}
+                      springConfig={ presets.wobbly }
+                      style={{color: "orange", fontSize: `25px`, fontWeight: 600, margin: "0 10px"}}
+                    /> Kilowatts-hours Per Day</p>
+                  </ul>
+                  <ul id="lightbulb-year">
+                    <p>Which adds up to 
+                    <TextTransition
+                      inline={true}
+                      text={(usage * 365).toLocaleString()}
+                      springConfig={ presets.wobbly }
+                      style={{color: "orange", fontSize: "25px", fontWeight: 600, margin: "0 10px"}}
+                    />
+                    Kilowatt-hours a year</p>
+                  </ul>
+                  <ul id="lightbulb-savings">
+                    <p>
+                      Which at the average rate of 12 cents per kilowatt-hour adds up to a savings of  
+                      <TextTransition
+                          inline={true}
+                          text={`$${((usage * 365) * (stateMap[state] / 100)).toLocaleString()}`}
+                          springConfig={ presets.wobbly }
+                          style={{color: "#21e720", fontSize: "25px", fontWeight: 600, margin: "0 10px"}}
+                        />
+                      a year 
+                    </p>
+                    </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+);
+};
+
+export default IndexPage;
